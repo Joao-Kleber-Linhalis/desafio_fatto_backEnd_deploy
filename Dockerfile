@@ -2,9 +2,11 @@
 FROM ubuntu:latest AS build
 
 RUN apt-get update
-RUN apt-get install openjdk-21-jdk -y
-RUN apt-get install maven -y
+
+RUN apt-get update && apt-get install openjdk-21-jdk -y
 COPY . .
+
+RUN apt-get install maven -y
 
 RUN mvn clean install -DskipTests
 
@@ -18,6 +20,8 @@ EXPOSE 8080 5432
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD 123
 ENV POSTGRES_DB desafio_fatto_db
+
+FROM openjdk:21-jdk-slim
 
 # Copiar o arquivo JAR compilado da fase de build
 COPY --from=build /target/back-end.desafio-0.0.1-SNAPSHOT.jar /app.jar
