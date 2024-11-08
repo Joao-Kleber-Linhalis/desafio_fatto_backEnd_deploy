@@ -23,8 +23,8 @@ ENV POSTGRES_PASSWORD=123
 ENV POSTGRES_DB=desafio-fatto-db
 
 # Iniciar o PostgreSQL e criar o banco de dados
-RUN service postgresql start && \
-    sudo -u postgres psql -c "CREATE DATABASE desafio-fatto-db;"
+RUN /etc/init.d/postgresql start && \
+    sudo -u postgres psql -c "CREATE DATABASE desafio_fatto_db"
 
 # Copiar o arquivo JAR compilado da fase de build
 COPY --from=build /target/back-end.desafio-0.0.1-SNAPSHOT.jar /app.jar
