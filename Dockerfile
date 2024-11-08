@@ -9,20 +9,18 @@ COPY . .
 RUN mvn clean install -DskipTests
 
 # Fase de execução com PostgreSQL e aplicação
-FROM ubuntu:latest
-
-# Instalar PostgreSQL
-RUN apt-get update && apt-get install -y postgresql postgresql-contrib
+FROM library/postgres:latest
 
 # Expor as portas necessárias
 EXPOSE 8080 5432
 
-# Copiar o script de inicialização do banco
-COPY init-db.sh /init-db.sh
-RUN chmod +x /init-db.sh
+# Configurações do PostgreSQL (se necessário)
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD 123
+ENV POSTGRES_DB desafio_fatto_db
 
 # Copiar o arquivo JAR compilado da fase de build
 COPY --from=build /target/back-end.desafio-0.0.1-SNAPSHOT.jar /app.jar
 
 # Comando para iniciar o PostgreSQL e depois a aplicação
-CMD ["sh", "-c", "/init-db.sh && java -jar /app.jar"]
+CMD ["sh", "-c", "docker-entrypoint.sh postgres & sleep 10 && java -jar /app.jar"]
