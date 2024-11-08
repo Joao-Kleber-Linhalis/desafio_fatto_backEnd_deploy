@@ -17,17 +17,12 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib
 # Expor as portas necessárias
 EXPOSE 8080 5432
 
-# Variáveis de ambiente para o PostgreSQL
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=123
-ENV POSTGRES_DB=desafio-fatto-db
-
-# Iniciar o PostgreSQL e criar o banco de dados
-RUN /etc/init.d/postgresql start && \
-    sudo -u postgres psql -c "CREATE DATABASE desafio_fatto_db"
+# Copiar o script de inicialização do banco
+COPY init-db.sh /init-db.sh
+RUN chmod +x /init-db.sh
 
 # Copiar o arquivo JAR compilado da fase de build
 COPY --from=build /target/back-end.desafio-0.0.1-SNAPSHOT.jar /app.jar
 
 # Comando para iniciar o PostgreSQL e depois a aplicação
-CMD service postgresql start && java -jar /app.jar
+CMD ["sh", "-c", "/init-db.sh && java -jar /app.jar"]
