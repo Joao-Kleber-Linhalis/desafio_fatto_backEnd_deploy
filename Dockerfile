@@ -1,9 +1,16 @@
-FROM openjdk:21-jdk-slim AS BUILD
+FROM maven:4.0.0-openjdk-21 AS BUILD
 WORKDIR /app
-COPY . /app
-RUN apt-get update && \
-    apt-get install -y maven && \
-    apt-get clean;
-RUN mvn clean package -X -DskipTests
-RUN mvn spring-boot:run
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+COPY --from=build /target/back-end.desafio-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
+EXPOSE 5432
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
