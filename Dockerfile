@@ -1,4 +1,4 @@
-FROM maven:4.0.0-openjdk-21 AS BUILD
+FROM maven:3.9.9-openjdk-21 AS BUILD
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
